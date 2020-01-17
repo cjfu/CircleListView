@@ -1,6 +1,14 @@
 package com.example.circlelistview;
 
 import android.content.Context;
+import android.content.res.TypedArray;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Rect;
+import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -16,6 +24,10 @@ public class CircleListView extends ViewGroup {
     double angel = 0;//偏移角度
     private float oldTouchY;//上一次触摸的y轴位置
     private boolean isScrolling = false;//是否在滑动状态
+    private Bitmap circleBitmap = null;
+    private Rect src;
+    private Rect dst;
+    Paint paint;
     Adapter adapter = new Adapter(this) {
         @Override
         public View getView(int position) {
@@ -25,14 +37,24 @@ public class CircleListView extends ViewGroup {
 
     public CircleListView(Context context) {
         super(context);
+        setWillNotDraw(false);
+        paint = new Paint();
     }
 
     public CircleListView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        setWillNotDraw(false);
+        paint = new Paint();
+        TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.CircleListView);
+        setCircleBitMap(ta.getResourceId(R.styleable.CircleListView_circleDrawable, 0));
     }
 
-    public CircleListView(Context context, AttributeSet attrs, int defStyleAttr) {
-        super(context, attrs, defStyleAttr);
+    private void setCircleBitMap(int drawableId) {
+        if (drawableId != 0) {
+            circleBitmap = BitmapFactory.decodeResource(getResources(), drawableId);
+        } else {
+            circleBitmap = null;
+        }
     }
 
     public void setAdapter(Adapter adapter) {
@@ -47,13 +69,35 @@ public class CircleListView extends ViewGroup {
     }
 
     @Override
+    protected void onDraw(Canvas canvas) {
+        super.onDraw(canvas);
+        if (circleBitmap != null) {
+            if (src == null) {
+                src = new Rect();
+            }
+            src.left = 0;
+            src.top = 0;
+            src.right = circleBitmap.getWidth();
+            src.bottom = circleBitmap.getHeight();
+            if (dst == null) {
+                dst = new Rect();
+            }
+            dst.left = ccx - circleR;
+            dst.top = ccy - circleR;
+            dst.right = ccx + circleR;
+            dst.bottom = ccy + circleR;
+            canvas.drawBitmap(circleBitmap, src, dst, paint);
+        }
+    }
+
+    @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         circleR = (getRight() - getLeft()) / 10 * 9;
         ccy = (int) (getHeight() * 0.45);
         ccx = -getWidth() / 4;
         for (int i = 0; i < adapter.getCount(); i++) {
             View childView = getChildAt(i);
-                double childViewAngel = i * intervalAngel + angel + 90;
+            double childViewAngel = i * intervalAngel + angel + 90;
             if (childViewAngel > 270) {
                 childViewAngel = 270;
             }
@@ -117,11 +161,11 @@ public class CircleListView extends ViewGroup {
     protected void refreshList() {
         removeAllViews();
         for (int i = 0; i < adapter.getCount(); i++) {
-            if (i == 0 && angel < -intervalAngel * (adapter.getCount() - 1)){
+            if (i == 0 && angel < -intervalAngel * (adapter.getCount() - 1)) {
                 angel = -intervalAngel * (adapter.getCount() - 1);
             }
             addView(adapter.getView(i));
-            if(adapter.getCount() == 1){
+            if (adapter.getCount() == 1) {
                 setPosition(0);
             }
         }
