@@ -5,10 +5,8 @@ import android.content.res.TypedArray;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
-import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
 import android.view.View;
@@ -47,6 +45,7 @@ public class CircleListView extends ViewGroup {
         paint = new Paint();
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.CircleListView);
         setCircleBitMap(ta.getResourceId(R.styleable.CircleListView_circleDrawable, 0));
+        ta.recycle();
     }
 
     private void setCircleBitMap(int drawableId) {
@@ -94,15 +93,12 @@ public class CircleListView extends ViewGroup {
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
         circleR = (getRight() - getLeft()) / 10 * 9;
         ccy = (int) (getHeight() * 0.45);
-        ccx = -getWidth() / 4;
+        ccx = -getWidth() / 5;
         for (int i = 0; i < adapter.getCount(); i++) {
             View childView = getChildAt(i);
             double childViewAngel = i * intervalAngel + angel + 90;
-            if (childViewAngel > 270) {
-                childViewAngel = 270;
-            }
-            if (childViewAngel < -90) {
-                childViewAngel = -90;
+            if (childViewAngel > 270 || childViewAngel < -90) {
+                continue;
             }
             int x = ccx + (int) (Math.sin(Math.toRadians(childViewAngel)) * circleR);
             int y = ccy - (int) (Math.cos(Math.toRadians(childViewAngel)) * circleR);
