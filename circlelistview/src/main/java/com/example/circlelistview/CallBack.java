@@ -31,6 +31,6 @@ public class CallBack extends ListCallBack {
 
     @Override
     protected void setPosition(int position) {
-        view.angel = -position * view.intervalAngel;
+        view.angel = -position * intervalAngel;
     }
 }

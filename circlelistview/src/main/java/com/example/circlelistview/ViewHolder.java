@@ -1,10 +1,8 @@
 package com.example.circlelistview;
 
-import android.nfc.Tag;
 import android.view.View;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static com.example.circlelistview.CircleListView.intervalAngel;
