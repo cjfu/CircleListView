@@ -10,7 +10,7 @@ public abstract class Adapter {
         return 0;
     }
 
-    public abstract View getView(int position);
+    public abstract View getView(ViewHolder holder,int position);
 
     public void notifyDataChanged() {
         callBack.refreshList();

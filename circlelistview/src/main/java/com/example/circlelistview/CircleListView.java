@@ -8,6 +8,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import android.view.ViewGroup;
 public class CircleListView extends ViewGroup {
 
     protected static final double intervalAngel = 22.5;//子view之间的间隔角
+    private static final String TAG = "CircleListView";
 
     int circleR;//圆的半径
     int ccx;//圆心的x轴坐标
@@ -28,12 +30,17 @@ public class CircleListView extends ViewGroup {
     Paint paint;
 
     CallBack callBack;
+    ViewHolder viewHolder = new ViewHolder(this);
 
 
     Adapter adapter = new Adapter() {
         @Override
-        public View getView(int position) {
-            return new View(getContext());
+        public View getView(ViewHolder holder, int position) {
+            View view = holder.getViewByPosition(position);
+            if (view == null) {
+                view = new View(getContext());
+            }
+            return view;
         }
     };
 
@@ -100,12 +107,17 @@ public class CircleListView extends ViewGroup {
         circleR = (getRight() - getLeft()) / 10 * 9;
         ccy = (int) (getHeight() * 0.45);
         ccx = -getWidth() / 5;
-        for (int i = 0; i < adapter.getCount(); i++) {
-            View childView = getChildAt(i);
+//        circleR = (getRight() - getLeft()) / 2;
+//        ccy = getHeight() / 2;
+//        ccx = getWidth() / 2;
+        for (Integer i : viewHolder.views.keySet()) {
             double childViewAngel = i * intervalAngel + angel + 90;
-            if (childViewAngel > 270 || childViewAngel < -90) {
-                continue;
-            }
+//            if (childViewAngel > 270 || childViewAngel < -90) {
+//                continue;
+//            }
+            View childView = viewHolder.getViewByPosition(i);
+            Log.e(TAG, "onLayout: getChildCount = " + getChildCount());
+            Log.e(TAG, "i = " + i + " and " + "childView = " + childView);
             int x = ccx + (int) (Math.sin(Math.toRadians(childViewAngel)) * circleR);
             int y = ccy - (int) (Math.cos(Math.toRadians(childViewAngel)) * circleR);
             int vl = x - childView.getMeasuredWidth() / 2;
@@ -129,7 +141,7 @@ public class CircleListView extends ViewGroup {
                     float offSetY = 0;
                     oldTouchY = ev.getY();
                     angel += offSetY / 20;
-                    requestLayout();
+                    callBack.refreshList();
                     return true;
                 } else if (isScrolling) {
                     float offSetY = ev.getY() - oldTouchY;
@@ -141,7 +153,7 @@ public class CircleListView extends ViewGroup {
                     } else {
                         angel += offSetY / 20;
                     }
-                    requestLayout();
+                    callBack.refreshList();
                     return true;
                 }
                 return super.dispatchTouchEvent(ev);
@@ -159,24 +171,5 @@ public class CircleListView extends ViewGroup {
                 return super.dispatchTouchEvent(ev);
         }
     }
-
-//    protected void refreshList() {
-//        removeAllViews();
-//        for (int i = 0; i < adapter.getCount(); i++) {
-//            if (i == 0 && angel < -intervalAngel * (adapter.getCount() - 1)) {
-//                angel = -intervalAngel * (adapter.getCount() - 1);
-//            }
-//            addView(adapter.getView(i));
-//            if (adapter.getCount() == 1) {
-//                setPosition(0);
-//            }
-//        }
-//        invalidate();
-//    }
-//
-//    protected void setPosition(int position) {
-//        angel = -position * intervalAngel;
-//    }
-
 
 }

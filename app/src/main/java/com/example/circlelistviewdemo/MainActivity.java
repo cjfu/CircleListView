@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.example.circlelistview.Adapter;
 import com.example.circlelistview.CircleListView;
+import com.example.circlelistview.ViewHolder;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -31,10 +32,14 @@ public class MainActivity extends AppCompatActivity {
         circle_list_view = findViewById(R.id.circle_list_view);
         adapter = new Adapter() {
             @Override
-            public View getView(int position) {
-                View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.item_test,null);
+            public View getView(ViewHolder holder, int position) {
+                View view = holder.getViewByPosition(position);
+                if (holder.getViewByPosition(position) == null) {
+                    view = LayoutInflater.from(MainActivity.this).inflate(R.layout.item_test, null);
+                }
                 TextView text = view.findViewById(R.id.text);
                 text.setText(position + "");
+                holder.add(position, view);
                 return view;
             }
 
