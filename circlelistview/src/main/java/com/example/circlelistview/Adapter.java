@@ -4,11 +4,7 @@ import android.view.View;
 
 public abstract class Adapter {
 
-    private CircleListView circleListView;
-
-    public Adapter(CircleListView circleListView) {
-        this.circleListView = circleListView;
-    }
+    private ListCallBack callBack;
 
     public int getCount() {
         return 0;
@@ -17,7 +13,7 @@ public abstract class Adapter {
     public abstract View getView(int position);
 
     public void notifyDataChanged() {
-        circleListView.refreshList();
+        callBack.refreshList();
     }
 
     public void setPosition(int position) {
@@ -26,6 +22,10 @@ public abstract class Adapter {
         } else if (position < 0) {
             position = 0;
         }
-        circleListView.setPosition(position);
+        callBack.setPosition(position);
+    }
+
+    protected void setCallBack(ListCallBack callBack) {
+        this.callBack = callBack;
     }
 }

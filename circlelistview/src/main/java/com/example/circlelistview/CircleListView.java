@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 
 public class CircleListView extends ViewGroup {
 
-    private static final double intervalAngel = 22.5;//子view之间的间隔角
+    protected static final double intervalAngel = 22.5;//子view之间的间隔角
 
     int circleR;//圆的半径
     int ccx;//圆心的x轴坐标
@@ -26,7 +26,11 @@ public class CircleListView extends ViewGroup {
     private Rect src;
     private Rect dst;
     Paint paint;
-    Adapter adapter = new Adapter(this) {
+
+    CallBack callBack;
+
+
+    Adapter adapter = new Adapter() {
         @Override
         public View getView(int position) {
             return new View(getContext());
@@ -58,7 +62,9 @@ public class CircleListView extends ViewGroup {
 
     public void setAdapter(Adapter adapter) {
         this.adapter = adapter;
-        refreshList();
+        callBack = new CallBack(this);
+        this.adapter.setCallBack(callBack);
+        callBack.refreshList();
     }
 
     @Override
@@ -154,21 +160,23 @@ public class CircleListView extends ViewGroup {
         }
     }
 
-    protected void refreshList() {
-        removeAllViews();
-        for (int i = 0; i < adapter.getCount(); i++) {
-            if (i == 0 && angel < -intervalAngel * (adapter.getCount() - 1)) {
-                angel = -intervalAngel * (adapter.getCount() - 1);
-            }
-            addView(adapter.getView(i));
-            if (adapter.getCount() == 1) {
-                setPosition(0);
-            }
-        }
-        invalidate();
-    }
+//    protected void refreshList() {
+//        removeAllViews();
+//        for (int i = 0; i < adapter.getCount(); i++) {
+//            if (i == 0 && angel < -intervalAngel * (adapter.getCount() - 1)) {
+//                angel = -intervalAngel * (adapter.getCount() - 1);
+//            }
+//            addView(adapter.getView(i));
+//            if (adapter.getCount() == 1) {
+//                setPosition(0);
+//            }
+//        }
+//        invalidate();
+//    }
+//
+//    protected void setPosition(int position) {
+//        angel = -position * intervalAngel;
+//    }
 
-    protected void setPosition(int position) {
-        angel = -position * intervalAngel;
-    }
+
 }

@@ -7,6 +7,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import com.example.circlelistview.Adapter;
@@ -27,7 +29,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         circle_list_view = findViewById(R.id.circle_list_view);
-        adapter = new Adapter(circle_list_view) {
+        adapter = new Adapter() {
             @Override
             public View getView(int position) {
                 View view = LayoutInflater.from(MainActivity.this).inflate(R.layout.item_test,null);
